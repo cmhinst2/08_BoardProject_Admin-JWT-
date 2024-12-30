@@ -1,0 +1,143 @@
+.dash-board-container {
+    display: flex;
+    flex-direction: column;
+    width: 1300px;
+    margin: 0 auto;
+}
+
+.admin-info {
+    display: flex;
+}
+
+.admin-info button {
+    width: 100px;
+    margin-left: 30px;
+    background-color: red;
+}
+
+.menu-box {
+    display: flex;
+
+}
+
+.section-border{
+    border: 1px solid #ddd;
+    flex-basis: calc(100%/2);
+    padding: 20px;
+    max-height: 650px;
+    overflow-y: auto;
+}
+
+.section-border:first-child {
+    margin-right: 20px;
+}
+
+.section-border h2 {
+    margin: 0;
+}
+
+.restoreBtn {
+    margin-top: 30px;
+}
+
+.ul-border {
+    border: 1px solid #ddd;
+    padding: 50px;
+    border-radius: 20px;
+}
+
+.tab-box {
+    list-style: none;
+    display: flex;
+    
+    padding: 0;
+}
+
+.tab-box li {
+    flex-basis: calc(100%/3);
+    border: 1px solid #ddd;
+    padding: 30px;
+    text-align: center;
+    border-radius: 0 0 10px 10px;
+    font-size: 20px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.tab-box li:hover {
+    cursor: pointer;
+    background-color: #0158b5;
+    color: #fff;
+}
+
+
+.tab-box li.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+
+/* router 이용 시 css 추가*/
+.router-tab-box {
+    list-style: none;
+    display: flex;
+    
+    padding: 0;
+}
+
+.router-tab-box a {
+    text-decoration: none;
+    color: black;
+    flex-basis: calc(100%/3);
+    border: 1px solid #ddd;
+    padding: 30px;
+    text-align: center;
+    border-radius: 0 0 10px 10px;
+    font-size: 20px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+/* Link 태그는 html상 a태그 */
+.router-tab-box a.active {
+    color : #fff;
+    background-color: #007bff;
+}
+
+
+.statistics-section {
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 10px;
+}
+
+.manager-div {
+    display: flex;
+}
+
+.manager-section:first-child {
+    margin-right: 10px;
+}
+
+.manager-section {
+    border: 1px solid #ddd;
+    padding: 20px;
+    width: 50%;
+}
+
+.manager-section input {
+    width: 300px;
+}
+
+.issueBtn {
+    margin-top: 20px;
+}
+
+.manager-list-table {
+    border-collapse: collapse;
+    font-size: 20px;
+}
+
+.new-members {
+    margin-bottom: 20px;
+}

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.kh.admin.auth.model.mapper.RefreshMapper">
+
+	<!-- Refresh Token 삽입 -->
+	<insert id="insertRefreshToken" parameterType="map">
+		MERGE INTO TB_REFRESH_TOKEN TRT
+	    USING DUAL
+	    ON (TRT.MEMBER_NO = #{memberNo})
+	    WHEN MATCHED THEN
+	        UPDATE SET 
+	        TRT.REFRESH_TOKEN = #{refreshToken}, 
+	        TRT.EXPIRATION_DATE = #{expirationDate}
+	    WHEN NOT MATCHED THEN
+	        INSERT (MEMBER_NO, MEMBER_EMAIL, REFRESH_TOKEN, EXPIRATION_DATE)
+	        VALUES (#{memberNo}, #{memberEmail}, #{refreshToken}, #{expirationDate})
+	</insert>
+	
+	<!--  Refresh Token 일치 여부 조회 -->
+	<select id="matchRefreshToken">
+		SELECT MEMBER_EMAIL FROM "TB_REFRESH_TOKEN"
+		WHERE REFRESH_TOKEN = #{refreshToken}
+	</select>
+
+	<!-- 특정 사용자의 Refresh Token 삭제 -->
+	<delete id="deleteRefreshToken">
+		DELETE FROM "TB_REFRESH_TOKEN"
+		WHERE MEMBER_EMAIL = #{memberEmail}
+	</delete>
+
+
+</mapper>

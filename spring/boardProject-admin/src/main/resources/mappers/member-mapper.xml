@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="edu.kh.admin.main.model.mapper.AdminMapper">
+
+	<!-- 로그인 -->
+	<select id="login">
+		SELECT MEMBER_NO, MEMBER_EMAIL, MEMBER_NICKNAME, MEMBER_PW, AUTHORITY
+		FROM "MEMBER"
+		WHERE MEMBER_EMAIL = #{memberEmail}
+		AND MEMBER_DEL_FL = 'N'
+		AND AUTHORITY = 2
+	</select>
+
+	<!-- 새로운 가입 회원 조회 -->
+	<select id="getNewMember">
+		SELECT MEMBER_NO, MEMBER_EMAIL, MEMBER_NICKNAME, ENROLL_DATE
+		FROM "MEMBER"
+		WHERE ENROLL_DATE >= SYSDATE - 7
+		AND AUTHORITY = 1
+		ORDER BY ENROLL_DATE DESC
+	</select>
+
+	<!-- 탈퇴 회원 조회 -->
+	<select id="selectWithdrawnMemberList">
+		SELECT MEMBER_NO, MEMBER_EMAIL, MEMBER_NICKNAME
+		FROM "MEMBER"
+		WHERE MEMBER_DEL_FL = 'Y'
+		ORDER BY MEMBER_NO DESC
+	</select>
+
+	<!-- 탈퇴 회원 복구 -->
+	<update id="restoreMember">
+		UPDATE "MEMBER" SET
+		MEMBER_DEL_FL = 'N'
+		WHERE MEMBER_NO = #{memberNo}
+		AND MEMBER_DEL_FL = 'Y'
+	</update>
+
+	<!-- 삭제된 게시글 목록 조회 -->
+	<select id="selectDeleteBoardList">
+		SELECT BOARD_NO, BOARD_TITLE,
+		BOARD_NAME, MEMBER_NICKNAME
+		FROM "BOARD"
+		JOIN "MEMBER" USING(MEMBER_NO)
+		JOIN "BOARD_TYPE" USING(BOARD_CODE)
+		WHERE BOARD_DEL_FL = 'Y'
+		ORDER BY BOARD_NO DESC
+	</select>
+
+	<!-- 삭제 게시글 복구 -->
+	<update id="restoreBoard">
+		UPDATE "BOARD" SET
+		BOARD_DEL_FL = 'N'
+		WHERE BOARD_NO = #{boardNo}
+		AND BOARD_DEL_FL = 'Y'
+	</update>
+
+	<!-- 게시글 최대 조회수 
+		만약 최대 조회 수가 똑같은 게시물이 여러개 존재한다면 
+		가장 최근에 작성된 게시글 기준(BOARD_NO가 큰순서)으로 정렬하여 가져옴
+	-->
+	<select id="maxReadCount">
+		SELECT BOARD_NAME, BOARD_NO, BOARD_TITLE, MEMBER_NICKNAME, READ_COUNT 
+		FROM "BOARD"
+		JOIN "MEMBER" USING(MEMBER_NO)
+		JOIN "BOARD_TYPE" USING(BOARD_CODE)
+		WHERE READ_COUNT = (SELECT MAX(READ_COUNT) FROM "BOARD")
+		ORDER BY BOARD_NO DESC
+		FETCH FIRST 1 ROWS ONLY
+	</select>
+
+	<!-- 게시글 최대 좋아요 수 
+		만약 최대 좋아요 수가 똑같은 게시물이 여러개 존재한다면 
+		가장 최근에 작성된 게시글 기준(BOARD_NO가 큰순서)으로 정렬하여 가져옴
+	-->
+	<select id="maxLikeCount">
+		SELECT BT.BOARD_NAME, B.BOARD_NO, COUNT(*) AS LIKE_COUNT, B.BOARD_TITLE, M.MEMBER_NICKNAME
+	    FROM "BOARD_LIKE" BL
+	    JOIN "BOARD" B ON BL.BOARD_NO = B.BOARD_NO
+	    JOIN "BOARD_TYPE" BT ON B.BOARD_CODE = BT.BOARD_CODE
+	    JOIN "MEMBER" M ON B.MEMBER_NO = M.MEMBER_NO
+	    GROUP BY BT.BOARD_NAME, B.BOARD_NO, B.BOARD_TITLE, M.MEMBER_NICKNAME
+	    ORDER BY LIKE_COUNT DESC, B.BOARD_NO DESC
+	    FETCH FIRST 1 ROWS ONLY
+	</select>
+
+	<!-- 게시글 최대 댓글 수 
+		만약 최대 댓글 수가 똑같은 게시물이 여러개 존재한다면 
+		가장 최근에 작성된 게시글 기준(BOARD_NO가 큰순서)으로 정렬하여 가져옴
+	-->
+	<select id="maxCommentCount">
+		SELECT BT.BOARD_NAME, B.BOARD_NO, COUNT(*) AS COMMENT_COUNT, B.BOARD_TITLE, M.MEMBER_NICKNAME
+		FROM "COMMENT" C
+		JOIN "BOARD" B ON  B.BOARD_NO = C.BOARD_NO
+		JOIN "BOARD_TYPE" BT ON B.BOARD_CODE = BT.BOARD_CODE
+		JOIN "MEMBER" M ON B.MEMBER_NO = M.MEMBER_NO
+		GROUP BY BT.BOARD_NAME, B.BOARD_NO, B.BOARD_TITLE, M.MEMBER_NICKNAME
+		ORDER BY COMMENT_COUNT DESC, BOARD_NO DESC
+		FETCH FIRST 1 ROWS ONLY
+	</select>
+
+	<!-- 관리자 계정 발급 -->
+	<insert id="createAdminAccount">
+		INSERT INTO "MEMBER" VALUES(
+		SEQ_MEMBER_NO.NEXTVAL,
+		#{memberEmail},
+		#{memberPw},
+		#{memberNickname},
+		#{memberTel},
+		NULL,
+		NULL,
+		DEFAULT,
+		'N',
+		2
+		)
+	</insert>
+
+	<!-- 관리자 계정 목록 -->
+	<select id="adminAccountList">
+		SELECT MEMBER_NO, MEMBER_EMAIL, MEMBER_NICKNAME, MEMBER_TEL
+		FROM "MEMBER"
+		WHERE AUTHORITY = 2
+	</select>
+
+
+
+
+</mapper>
