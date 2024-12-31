@@ -4,21 +4,25 @@
 
 	<!-- Refresh Token 삽입 -->
 	<insert id="insertRefreshToken" parameterType="map">
-		MERGE INTO TB_REFRESH_TOKEN TRT
-	    USING DUAL
-	    ON (TRT.MEMBER_NO = #{memberNo})
-	    WHEN MATCHED THEN
-	        UPDATE SET 
-	        TRT.REFRESH_TOKEN = #{refreshToken}, 
-	        TRT.EXPIRATION_DATE = #{expirationDate}
-	    WHEN NOT MATCHED THEN
-	        INSERT (MEMBER_NO, MEMBER_EMAIL, REFRESH_TOKEN, EXPIRATION_DATE)
-	        VALUES (#{memberNo}, #{memberEmail}, #{refreshToken}, #{expirationDate})
+		MERGE INTO
+		TB_REFRESH_TOKEN TRT
+		USING DUAL
+		ON (TRT.MEMBER_NO = #{memberNo})
+		WHEN MATCHED THEN
+		UPDATE SET
+		TRT.REFRESH_TOKEN = #{refreshToken},
+		TRT.EXPIRATION_DATE = #{expirationDate}
+		WHEN NOT MATCHED THEN
+		INSERT
+		(MEMBER_NO, MEMBER_EMAIL, REFRESH_TOKEN, EXPIRATION_DATE)
+		VALUES
+		(#{memberNo}, #{memberEmail}, #{refreshToken}, #{expirationDate})
 	</insert>
-	
-	<!--  Refresh Token 일치 여부 조회 -->
+
+	<!-- Refresh Token 일치 여부 조회 -->
 	<select id="matchRefreshToken">
-		SELECT MEMBER_EMAIL FROM "TB_REFRESH_TOKEN"
+		SELECT MEMBER_EMAIL 
+		FROM "TB_REFRESH_TOKEN"
 		WHERE REFRESH_TOKEN = #{refreshToken}
 	</select>
 
@@ -28,5 +32,20 @@
 		WHERE MEMBER_EMAIL = #{memberEmail}
 	</delete>
 
-
+	<!-- 만료된 리프레시 토큰 삭제(스케줄러용) -->
+	<delete id="deleteExpiredTokens">
+		<![CDATA[
+	    DELETE FROM TB_REFRESH_TOKEN 
+	    WHERE EXPIRATION_DATE < #{now}
+	     ]]>
+	</delete>
+	
+	<!--  만료된 리프레시 토큰 개수 조회(스케줄러용) -->
+	<select id="countExpiredTokens" resultType="int">
+        <![CDATA[
+            SELECT COUNT(*) 
+            FROM TB_REFRESH_TOKEN 
+            WHERE EXPIRATION_DATE < #{now}
+        ]]>
+    </select>
 </mapper>

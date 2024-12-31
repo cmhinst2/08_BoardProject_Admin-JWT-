@@ -12,4 +12,7 @@ public interface AuthService {
 
 	// 이메일 일치하는 Refresh Token 삭제
 	void deleteRefreshToken(String memberEmail);
+	
+	// 만료 토큰 삭제
+	void cleanupExpiredTokens();
 }
